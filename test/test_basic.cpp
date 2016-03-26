@@ -3,7 +3,7 @@
 #include <vector>
 
 #define BOOST_TEST_MAIN
-#include <boost/test/included/unit_test.hpp> 
+#include <boost/test/included/unit_test.hpp>
 #include "pillowtalk.h"
 
 using namespace std;
@@ -12,7 +12,7 @@ using namespace boost::unit_test;
 struct InitFixture {
   InitFixture() {
     pt_init();
-    pt_response_t* res; 
+    pt_response_t* res;
 
     res = pt_delete("http://localhost:5984/pt_test");
     if (res->response_code == 500) {
@@ -144,7 +144,7 @@ BOOST_AUTO_TEST_CASE( test_mutable_json )
 
 
   // Now set these things into the map
-  
+
   pt_map_set(map,"null",null);
   pt_map_set(map,"boolean",boolean);
   pt_map_set(map,"integer",integer);

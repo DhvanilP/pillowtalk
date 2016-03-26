@@ -111,7 +111,7 @@ void free_parser_ctx(pt_parser_ctx_t* parser_ctx)
 
 pt_response_t* pt_delete(const char* server_target)
 {
-  pt_response_t* res = http_operation("DELETE",server_target,NULL,0);
+  pt_response_t* res = http_operation("DELETE", server_target, NULL, 0);
   res->root = parse_json(res->raw_json,res->raw_json_len);
   return res;
 }
@@ -125,8 +125,8 @@ pt_response_t* pt_put(const char* server_target, pt_node_t* doc)
     data = pt_to_json(doc,0);
     if (data) data_len = strlen(data);
   }
-  res = http_operation("PUT",server_target,data,data_len);
-  res->root = parse_json(res->raw_json,res->raw_json_len);
+  res = http_operation("PUT", server_target, data, data_len);
+  res->root = parse_json(res->raw_json, res->raw_json_len);
   if (data)
     free(data);
   return res;
@@ -134,21 +134,21 @@ pt_response_t* pt_put(const char* server_target, pt_node_t* doc)
 
 pt_response_t* pt_put_raw(const char* server_target, const char* data, unsigned int data_len)
 {
-  pt_response_t* res = http_operation("PUT",server_target,data,data_len);
-  res->root = parse_json(res->raw_json,res->raw_json_len);
+  pt_response_t* res = http_operation("PUT", server_target, data, data_len);
+  res->root = parse_json(res->raw_json, res->raw_json_len);
   return res;
 }
 
 pt_response_t* pt_unparsed_get(const char* server_target)
 {
-  pt_response_t* res = http_operation("GET",server_target,NULL,0);
+  pt_response_t* res = http_operation("GET", server_target, NULL, 0);
   return res;
 }
 
 pt_response_t* pt_get(const char* server_target)
 {
-  pt_response_t* res = http_operation("GET",server_target,NULL,0);
-  res->root = parse_json(res->raw_json,res->raw_json_len);
+  pt_response_t* res = http_operation("GET", server_target, NULL, 0);
+  res->root = parse_json(res->raw_json, res->raw_json_len);
   return res;
 }
 
@@ -157,7 +157,7 @@ pt_node_t* pt_map_get(pt_node_t* map,const char* key)
   if (map && map->type == PT_MAP && key) {
     pt_map_t* real_map = (pt_map_t*) map;
     pt_key_value_t* search_result = NULL;
-    HASH_FIND(hh,real_map->key_values,key,strlen(key),search_result);
+    HASH_FIND(hh,real_map->key_values, key, strlen(key), search_result);
     if (search_result) {
       return search_result->value;
     } else {
@@ -200,9 +200,9 @@ void pt_array_remove(pt_node_t* array, pt_node_t* node)
     pt_array_t* real_array = (pt_array_t*) array;
     pt_array_elem_t* cur = NULL;
     pt_array_elem_t* tmp = NULL;
-    TAILQ_FOREACH_SAFE(cur,&real_array->head, entries, tmp) {
+    TAILQ_FOREACH_SAFE(cur, &real_array->head, entries, tmp) {
       if (cur->node == node) {
-        TAILQ_REMOVE(&real_array->head,cur,entries);
+        TAILQ_REMOVE(&real_array->head, cur, entries);
         pt_free_node(cur->node);
         free(cur);
         real_array->len--;
@@ -234,7 +234,7 @@ void pt_array_push_back(pt_node_t* array, pt_node_t* node)
   }
 }
 
-pt_iterator_t* pt_iterator(pt_node_t* node) 
+pt_iterator_t* pt_iterator(pt_node_t* node)
 {
   if (node) {
     if (node->type == PT_ARRAY) {
@@ -457,7 +457,7 @@ int pt_map_update(pt_node_t* root, pt_node_t* additions, int append)
 {
   pt_map_t* additions_map = (pt_map_t*) additions;
   pt_key_value_t* key_value = NULL;
-  if (!root || !additions || root->type != PT_MAP || additions->type != PT_MAP) 
+  if (!root || !additions || root->type != PT_MAP || additions->type != PT_MAP)
 	  return 1;
 
   for(key_value = additions_map->key_values; key_value != NULL; key_value = key_value->hh.next) {
@@ -530,11 +530,11 @@ void pt_printout(pt_node_t* root, const char* indent)
   const char anindent[] = " ";
   const char* myindent = anindent;
   char* newindent;
-  if (!root) return; 
+  if (!root) return;
 
   // Set up the indentation
   if (indent && strlen(indent) > 0) myindent = indent;
-  newindent = calloc(1, 2*strlen(myindent) + 1); 
+  newindent = calloc(1, 2*strlen(myindent) + 1);
   memcpy(newindent, myindent, strlen(myindent));
   memcpy(newindent+strlen(myindent), myindent, strlen(myindent));
 
@@ -544,34 +544,34 @@ void pt_printout(pt_node_t* root, const char* indent)
         pt_map_t* map = (pt_map_t*) root;
         pt_key_value_t* key_value = NULL;
 
-        printf("%s{\n", myindent); 
-        for(key_value = map->key_values; 
-            key_value != NULL; 
+        printf("%s{\n", myindent);
+        for(key_value = map->key_values;
+            key_value != NULL;
             key_value = key_value->hh.next) {
           int atype = key_value->value->type;
           if (atype == PT_MAP || atype == PT_ARRAY) {
-            printf("%s%s%s : \n", myindent, myindent, key_value->key); 
+            printf("%s%s%s : \n", myindent, myindent, key_value->key);
             pt_printout(key_value->value, newindent);
-          } else { 
-            printf("%s%s%s : ", myindent, myindent, key_value->key); 
+          } else {
+            printf("%s%s%s : ", myindent, myindent, key_value->key);
             pt_printout(key_value->value, "");
           }
           if (key_value->hh.next != NULL) printf(",");
           printf("\n");
         }
-        printf("%s}", myindent); 
-        break; 
+        printf("%s}", myindent);
+        break;
       }
     case PT_ARRAY:
       {
         pt_array_t* array = (pt_array_t*) root;
         pt_array_elem_t* elem = TAILQ_FIRST(&array->head);
-        printf("%s[\n", myindent); 
+        printf("%s[\n", myindent);
         while(elem) {
           int atype = elem->node->type;
           if (atype == PT_MAP || atype == PT_ARRAY) {
             pt_printout(elem->node, newindent);
-          } else { 
+          } else {
             printf("%s",myindent);
             pt_printout(elem->node, "");
           }
@@ -580,29 +580,29 @@ void pt_printout(pt_node_t* root, const char* indent)
           if (elem) printf(",");
           printf("\n");
         }
-        printf("%s]", myindent); 
-        break; 
+        printf("%s]", myindent);
+        break;
       }
     case PT_NULL:
-      printf("%sNULL", myindent); 
-      break; 
+      printf("%sNULL", myindent);
+      break;
     case PT_BOOLEAN:
       if (((pt_bool_value_t*) root)->value) printf("%sTrue", myindent);
       else printf("%sFalse", myindent);
     case PT_INTEGER:
       printf("%s%lld", myindent, ((pt_int_value_t*) root)->value);
-      break; 
+      break;
     case PT_DOUBLE:
       printf("%s%f", myindent, ((pt_double_value_t*) root)->value);
-      break; 
+      break;
     case PT_STRING:
       printf("%s%s", myindent, ((pt_str_value_t*) root)->value);
-      break; 
+      break;
     case PT_KEY_VALUE:
       break;
   }
   free(newindent);
-  
+
 }
 
 /* Static Implementation */
@@ -610,16 +610,17 @@ void pt_printout(pt_node_t* root, const char* indent)
 /*
  * This method wraps basic curl functionality
  */
-static pt_response_t* http_operation(const char* http_method, const char* server_target, const char* data, unsigned data_len)
+static pt_response_t* http_operation(const char* http_method,
+    const char* server_target, const char* data, unsigned data_len)
 {
   CURL *curl_handle;
   CURLcode ret;
   struct memory_chunk recv_chunk;
-  struct memory_chunk send_chunk = {0,0,0};
+  struct memory_chunk send_chunk = {0, 0, 0};
   pt_response_t* res;
-  recv_chunk.memory=NULL; /* we expect realloc(NULL, size) to work */
+  recv_chunk.memory = NULL; /* we expect realloc(NULL, size) to work */
   recv_chunk.size = 0;    /* no data at this point */
- 
+
 
   /* init the curl session */
   curl_handle = curl_easy_init();
@@ -632,20 +633,20 @@ static pt_response_t* http_operation(const char* http_method, const char* server
   // Want to avoid CURL SIGNALS
   curl_easy_setopt(curl_handle, CURLOPT_NOSIGNAL, 1);
 
-  printf("%s : %s\n",http_method,server_target);
+  printf("%s : %s\n", http_method, server_target);
 
-  if (!strcmp("PUT",http_method))
+  if (!strcmp("PUT", http_method))
     curl_easy_setopt(curl_handle, CURLOPT_UPLOAD, 1);
   else
     curl_easy_setopt(curl_handle, CURLOPT_CUSTOMREQUEST, http_method);
 
   if (data && data_len > 0) {
     send_chunk.memory = (char*) malloc(data_len);
-    memcpy(send_chunk.memory,data,data_len);
+    memcpy(send_chunk.memory, data, data_len);
     send_chunk.offset = send_chunk.memory;
     send_chunk.size = data_len;
     curl_easy_setopt(curl_handle, CURLOPT_READFUNCTION, send_memory_callback);
-    curl_easy_setopt(curl_handle, CURLOPT_READDATA, (void*) &send_chunk);
+    curl_easy_setopt(curl_handle, CURLOPT_READDATA, (void*)&send_chunk);
   }
 
   /* send all data to this function  */
@@ -661,9 +662,11 @@ static pt_response_t* http_operation(const char* http_method, const char* server
   /* get it! */
   ret = curl_easy_perform(curl_handle);
 
-  res = calloc(1,sizeof(pt_response_t));
+  res = calloc(1, sizeof(pt_response_t));
   if ((!ret)) {
-    ret = curl_easy_getinfo(curl_handle,CURLINFO_RESPONSE_CODE, &res->response_code);
+    ret = curl_easy_getinfo(curl_handle,
+                            CURLINFO_RESPONSE_CODE,
+                            &res->response_code);
     if (ret != CURLE_OK)
       res->response_code = 500;
 
@@ -809,7 +812,7 @@ static int json_string(void* ctx, const unsigned char* str, unsigned int length)
 }
 
 /* If we aren't in a key value pair then we create a new node, otherwise we are
- * the value 
+ * the value
  */
 static int json_start_map(void* ctx)
 {
