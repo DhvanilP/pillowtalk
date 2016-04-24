@@ -122,7 +122,7 @@ pt_response_t* pt_put(const char* server_target, pt_node_t* doc)
   int data_len = 0;
   pt_response_t* res = 0;
   if (doc) {
-    data = pt_to_json(doc,0);
+    data = pt_to_json(doc, 0);
     if (data) data_len = strlen(data);
   }
   res = http_operation("PUT", server_target, data, data_len);
@@ -135,6 +135,30 @@ pt_response_t* pt_put(const char* server_target, pt_node_t* doc)
 pt_response_t* pt_put_raw(const char* server_target, const char* data, unsigned int data_len)
 {
   pt_response_t* res = http_operation("PUT", server_target, data, data_len);
+  res->root = parse_json(res->raw_json, res->raw_json_len);
+  return res;
+}
+
+pt_response_t* pt_post(const char* server_target, pt_node_t* doc)
+{
+  char* data = NULL;
+  int data_len = 0;
+  pt_response_t* res = 0;
+  if (doc) {
+    data = pt_to_json(doc, 0);
+    if (data)
+      data_len = strlen(data);
+  }
+  res = http_operation("POST", server_target, data, data_len);
+  res->root = parse_json(res->raw_json, res->raw_json_len);
+  if (data)
+    free(data);
+  return res;
+}
+
+pt_response_t* pt_post_raw(const char* server_target, const char* data, unsigned int data_len)
+{
+  pt_response_t* res = http_operation("POST", server_target, data, data_len);
   res->root = parse_json(res->raw_json, res->raw_json_len);
   return res;
 }
@@ -618,6 +642,8 @@ static pt_response_t* http_operation(const char* http_method,
   struct memory_chunk recv_chunk;
   struct memory_chunk send_chunk = {0, 0, 0};
   pt_response_t* res;
+  struct curl_slist *headers = NULL;
+
   recv_chunk.memory = NULL; /* we expect realloc(NULL, size) to work */
   recv_chunk.size = 0;    /* no data at this point */
 
@@ -630,13 +656,26 @@ static pt_response_t* http_operation(const char* http_method,
 
   curl_easy_setopt(curl_handle, CURLOPT_CONNECTTIMEOUT, 10);
 
+  /* specify header: Content-Type */
+  headers = curl_slist_append(headers, "Content-Type: application/json");
+  curl_easy_setopt(curl_handle, CURLOPT_HTTPHEADER, headers);
+
   // Want to avoid CURL SIGNALS
   curl_easy_setopt(curl_handle, CURLOPT_NOSIGNAL, 1);
 
   printf("%s : %s\n", http_method, server_target);
 
+  /* set the http verb */
   if (!strcmp("PUT", http_method))
+  {
     curl_easy_setopt(curl_handle, CURLOPT_UPLOAD, 1);
+    curl_slist_append(headers, "Transfer-Encoding: chunked");
+  }
+  else if (!strcmp("POST", http_method))
+  {
+    curl_easy_setopt(curl_handle, CURLOPT_POST, 1);
+    curl_slist_append(headers, "Transfer-Encoding: chunked");
+  }
   else
     curl_easy_setopt(curl_handle, CURLOPT_CUSTOMREQUEST, http_method);
 
@@ -684,6 +723,7 @@ static pt_response_t* http_operation(const char* http_method,
     free(send_chunk.memory);
 
   /* cleanup curl stuff */
+  curl_slist_free_all(headers);
   curl_easy_cleanup(curl_handle);
   return res;
 }
@@ -1040,3 +1080,5 @@ static void generate_node_json(pt_node_t* node, yajl_gen g)
     yajl_gen_null(g);
   }
 }
+
+/* vim: set tabstop=2 shiftwidth=2: */

@@ -22,15 +22,15 @@ struct InitFixture {
     }
     pt_free_response(res);
 
-    res = pt_put_raw("http://localhost:5984/pt_test",NULL,0);
+    res = pt_put_raw("http://localhost:5984/pt_test", NULL, 0);
     pt_free_response(res);
 
     const char* basic = "{}";
-    res = pt_put_raw("http://localhost:5984/pt_test/basic",basic,strlen(basic));
+    res = pt_put_raw("http://localhost:5984/pt_test/basic", basic, strlen(basic));
     pt_free_response(res);
 
     const char* array = "{\"a\":[1,2,3]}";
-    res = pt_put_raw("http://localhost:5984/pt_test/array",array,strlen(array));
+    res = pt_put_raw("http://localhost:5984/pt_test/array", array, strlen(array));
     pt_free_response(res);
   }
 
@@ -39,6 +39,11 @@ struct InitFixture {
     pt_cleanup();
   }
 };
+
+inline void assert_valid_http_code(int code)
+{
+    BOOST_REQUIRE(code >= 200 && code < 300);
+}
 
 //BOOST_FIXTURE_TEST_SUITE(s, InitFixture);
 BOOST_GLOBAL_FIXTURE(InitFixture);
@@ -72,30 +77,67 @@ BOOST_AUTO_TEST_CASE( test_array )
   pt_free_response(res);
 }
 
-
 BOOST_AUTO_TEST_CASE( test_updates_to_document )
 {
   pt_node_t* new_doc = pt_map_new();
   pt_node_t* id = pt_string_new("mynewdoc");
-  pt_map_set(new_doc,"_id",id);
+  pt_map_set(new_doc, "_id", id);
 
   pt_node_t* name = pt_string_new("jubos");
-  pt_map_set(new_doc,"name",name);
-  pt_map_set(new_doc,"updates",pt_array_new());
+  pt_map_set(new_doc, "name", name);
+  pt_map_set(new_doc, "updates", pt_array_new());
 
-  pt_response_t* res = pt_put("http://localhost:5984/pt_test/mynewdoc",new_doc);
-  BOOST_REQUIRE(pt_map_get(res->root,"rev") != NULL);
+  pt_response_t* res = pt_put("http://localhost:5984/pt_test/mynewdoc", new_doc);
+  assert_valid_http_code(res->response_code);
+  BOOST_REQUIRE(pt_map_get(res->root, "rev") != NULL);
   pt_free_response(res);
   pt_free_node(new_doc);
+
   for(int i=0; i < 5; i++) {
     res = pt_get("http://localhost:5984/pt_test/mynewdoc");
     BOOST_REQUIRE(res->response_code == 200);
-    pt_array_push_back(pt_map_get(res->root,"updates"),pt_integer_new(i));
-    pt_response_t* put_res = pt_put("http://localhost:5984/pt_test/mynewdoc",res->root);
+    pt_array_push_back(pt_map_get(res->root, "updates"), pt_integer_new(i));
+    pt_response_t* put_res = pt_put("http://localhost:5984/pt_test/mynewdoc", res->root);
     BOOST_REQUIRE(put_res->response_code >= 200 && put_res->response_code < 300);
     pt_free_response(res);
     pt_free_response(put_res);
   }
+}
+
+BOOST_AUTO_TEST_CASE( test_create_document_via_post )
+{
+  pt_node_t* new_doc = pt_map_new();
+  pt_node_t* id = pt_string_new("mynewdoc-post");
+  pt_map_set(new_doc, "_id", id);
+
+  pt_node_t* name = pt_string_new("jubos");
+  pt_map_set(new_doc, "name", name);
+  pt_map_set(new_doc, "updates", pt_array_new());
+
+  pt_response_t* res = pt_post("http://localhost:5984/pt_test", new_doc);
+
+  assert_valid_http_code(res->response_code);
+  BOOST_REQUIRE(pt_map_get(res->root, "rev") != NULL);
+
+  /* cleanup */
+  pt_free_response(res);
+  pt_free_node(new_doc);
+}
+
+BOOST_AUTO_TEST_CASE( test_create_document_via_post_raw )
+{
+  const char *doc = "{"
+    "\"_id\": \"mynewdoc-post-raw\","
+    "\"name\": \"jubos\""
+    "}";
+  pt_response_t* res = pt_post_raw(
+    "http://localhost:5984/pt_test", doc, strlen(doc));
+
+  assert_valid_http_code(res->response_code);
+  BOOST_REQUIRE(pt_map_get(res->root, "rev") != NULL);
+
+  /* cleanup */
+  pt_free_response(res);
 }
 
 // Here we make a new set of json and make sure we get what we expect
