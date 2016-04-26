@@ -15,14 +15,23 @@
 #  endif
 #else
 #  define PT_API
-#endif 
+#endif
 
 
 #ifdef	__cplusplus
 extern "C" {
 #endif
 
-typedef enum {PT_MAP,PT_ARRAY,PT_NULL, PT_BOOLEAN, PT_INTEGER, PT_DOUBLE, PT_STRING, PT_KEY_VALUE} pt_type_t;
+typedef enum {
+  PT_MAP,
+  PT_ARRAY,
+  PT_NULL,
+  PT_BOOLEAN,
+  PT_INTEGER,
+  PT_DOUBLE,
+  PT_STRING,
+  PT_KEY_VALUE
+} pt_type_t;
 
 typedef struct {
   pt_type_t type;
@@ -49,9 +58,14 @@ PT_API void pt_free_response(pt_response_t* res);
 PT_API pt_response_t* pt_delete(const char* server_target);
 
 PT_API pt_response_t* pt_put(const char* server_target, pt_node_t* document);
-PT_API pt_response_t* pt_put_raw(const char* server_target, const char* data, unsigned int data_len);
+PT_API pt_response_t* pt_put_raw(const char* server_target, const char* data,
+                                 unsigned int data_len);
 
-/* 
+PT_API pt_response_t* pt_post(const char* server_target, pt_node_t* document);
+PT_API pt_response_t* pt_post_raw(const char* server_target, const char* data,
+                                  unsigned int data_len);
+
+/*
  * Do an HTTP get request on the target and parse the resulting JSON into the
  * pt_response object
  */
@@ -60,7 +74,7 @@ PT_API pt_response_t* pt_get(const char* server_target);
 
 /*
  * This will just do a get against the server target and not try to parse it at all.
- * It is useful for doing your own parsing with the resultant JSON 
+ * It is useful for doing your own parsing with the resultant JSON
  */
 PT_API pt_response_t* pt_unparsed_get(const char* server_target);
 
@@ -82,9 +96,9 @@ PT_API long long pt_integer_get(pt_node_t* integer);
 PT_API double pt_double_get(pt_node_t* dbl);
 PT_API const char* pt_string_get(pt_node_t* string);
 
-/* 
+/*
  * The following functions are used to change a pt_node_t to do update
- * operations or get new json strings 
+ * operations or get new json strings
  */
 
 PT_API void pt_map_set(pt_node_t* map, const char* key, pt_node_t* value);
@@ -107,7 +121,7 @@ PT_API void pt_array_push_front(pt_node_t* array, pt_node_t* elem);
  */
 PT_API void pt_array_remove(pt_node_t* array, pt_node_t* elem);
 
-/* 
+/*
  * Build an iterator from an array/map node.  If you pass in an unsupported
  * node it will return NULL
  */
@@ -128,7 +142,7 @@ PT_API pt_node_t* pt_iterator_next(pt_iterator_t* iter, const char** key);
  */
 PT_API char* pt_to_json(pt_node_t* root, int beautify);
 
-/* 
+/*
  * Take a raw json string and turn it into a pillowtalk structure
  */
 PT_API pt_node_t* pt_from_json(const char* json);
@@ -159,7 +173,7 @@ PT_API pt_node_t* pt_from_json(const char* json);
  * @return a nonzero error code if something cannot properly be merged.  For
  * example, if a key in the root is an array and the additions has it as a hash
  * then it will give up there, but it won't rollback so be careful.
- */    
+ */
 PT_API int pt_map_update(pt_node_t* root, pt_node_t* additions,int append);
 
 /*
@@ -169,7 +183,7 @@ PT_API int pt_map_update(pt_node_t* root, pt_node_t* additions,int append);
 PT_API pt_node_t* pt_clone(pt_node_t* root);
 
 /*
- * Print out a node, useful for debugging 
+ * Print out a node, useful for debugging
  */
 PT_API void pt_printout(pt_node_t* root, const char* indent);
 
@@ -201,22 +215,22 @@ PT_API void pt_printout(pt_node_t* root, const char* indent);
 typedef struct pt_changes_feed_t * pt_changes_feed;
 typedef enum {
     /** Keep the changes feed open, default NO*/
-    pt_changes_feed_continuous = 0x1, 
+    pt_changes_feed_continuous = 0x1,
     /** Request heartbeats from the server every N ms.  0 (default) means no
      * heartbeats */
     pt_changes_feed_req_heartbeats = 0x2,
     /** set changes feed callback function */
     pt_changes_feed_callback_function = 1000,
-    /** set changes feed generic options, 
-      * string gets appends without checking 
+    /** set changes feed generic options,
+      * string gets appends without checking
       * to the url (const char*) */
     pt_changes_feed_generic_opts = 2000,
   } pt_changes_feed_option;
 
 /** Function type for performing a call back on a change line from the server
  * (in continuous mode) or the entire JSON object (in non-continuous mode).
- * This callback function should return the following to give a status: 
- * 
+ * This callback function should return the following to give a status:
+ *
  *    0 : everything OK, processing can continue.
  *   <0 : something was wrong, or the end of a continuous feed is requested.
  *
@@ -225,7 +239,7 @@ typedef enum {
  * otherwise CouchDB itself will timeout the connection.  Because this is true,
  * one should take care that the transfer can then be ended (at the slowest)
  * every time a heartbeat comes in.  This should be taken into consideration
- * when a heartbeat rate is selected.  
+ * when a heartbeat rate is selected.
  *
  */
 typedef int (*pt_changes_callback_func)(pt_node_t* line_change);
@@ -233,15 +247,15 @@ typedef int (*pt_changes_callback_func)(pt_node_t* line_change);
 /** Allocate a changes feed handle. */
 PT_API pt_changes_feed pt_changes_feed_alloc();
 
-/** Set configuration options for a changes feed handle. */ 
+/** Set configuration options for a changes feed handle. */
 PT_API int pt_changes_feed_config(pt_changes_feed handle, pt_changes_feed_option opt, ...);
 
 /** Run the changes feed will start the changes feed, this will block until the
- * changes feed ends.  Returns 0 on success, 1 on error. 
+ * changes feed ends.  Returns 0 on success, 1 on error.
  */
 PT_API int pt_changes_feed_run(pt_changes_feed handle,
   const char* server_name,
-  const char* database); 
+  const char* database);
 
 /** Destroy the changes feed handle. */
 PT_API void pt_changes_feed_free(pt_changes_feed handle);
@@ -252,3 +266,5 @@ PT_API void pt_changes_feed_free(pt_changes_feed handle);
 #endif
 
 #endif // _PILLOWTALK_H_
+
+/* vim: set tabstop=2 shiftwidth=2: */

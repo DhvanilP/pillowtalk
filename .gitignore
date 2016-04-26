@@ -2,3 +2,4 @@ build
 Makefile
 Testing
 examples/basic
+*.out
