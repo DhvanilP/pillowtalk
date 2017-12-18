@@ -1,1 +1,1 @@
-gcc -lpillowtalk -o basic basic.c
+gcc basic.c -lpillowtalk -o basic
