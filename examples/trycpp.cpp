@@ -1,12 +1,9 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
-#include <string.h>
+#include <bits/stdc++.h>
 #include <pillowtalk.h>
 
 #include "pillowtalk.h"
-
-#define NULL ((void *)0)
+//#define NULL ((void *)0)
+using namespace std;
 
 typedef struct {
     char *event_number;
@@ -43,12 +40,27 @@ event_description *create_new_event(char *event_number);
 
 void push_event_to_doc(char *doc_name, event_description *event);
 
+char *configure_host;
+
 int main() {
     pt_init();
+
+
+    printf("Enter username:");
+    char user[100], password[100];
+    scanf("%s", user);
+
+    printf("Enter password:");
+    scanf("%s", password);
+
+    configure_host = concat("http://",
+                            concat(concat(concat(user, ":"), password), "@localhost:5984/events_db/"));
+    printf("%s", configure_host);
+
     create_new_document("doc1");
 
 
-    event_description *sample = create_new_event("4");
+    event_description *sample = create_new_event("5");
 
     sample->timestamp = pt_string_new("2018-05-13-06-39-50-993");
     sample->event = pt_string_new("WIFI_CONNECTION_PROGRESS");
@@ -112,7 +124,7 @@ void push_event_to_doc(char *doc_name, event_description *event) {
     pt_map_set(event_details, "localFileName", event->localFileName);
 
 
-    pt_response_t *put_response = pt_put(concat("http://admin:mini1234@localhost:5984/events_db/", doc_name), doc_root);
+    pt_response_t *put_response = pt_put(concat(configure_host, doc_name), doc_root);
     printf("Document name:%s  ..  PUT  ..  Response code: %ld  (pushing event)event_no:%s\n", doc_name,
            put_response->response_code, event->event_number);
     pt_free_response(put_response);
@@ -130,7 +142,7 @@ event_description *create_new_event(char *event_number) {
 void create_new_document(char *doc_name) {
     pt_response_t *response = NULL;
     pt_node_t *dummy_root = pt_map_new();
-    response = pt_put(concat("http://admin:mini1234@localhost:5984/events_db/", doc_name), dummy_root);
+    response = pt_put(concat(configure_host, doc_name), dummy_root);
     printf("Document name:%s  ..  PUT  ..  Response code: %ld\n ", doc_name, response->response_code);
     pt_free_response(response);
     pt_free_node(dummy_root);
@@ -138,7 +150,7 @@ void create_new_document(char *doc_name) {
 
 pt_response_t *get_document(char *doc_name) {
     pt_response_t *response = NULL;
-    response = pt_get(concat("http://admin:mini1234@localhost:5984/events_db/", doc_name));
+    response = pt_get(concat(configure_host, doc_name));
     printf("Document name:%s  ..  GET  ..  Response code: %ld\n ", doc_name, response->response_code);
     return response;
 }
