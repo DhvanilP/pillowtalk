@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CMakeSettings">
+    <configurations>
+      <configuration PROFILE_NAME="Debug" CONFIG_NAME="Debug" />
+    </configurations>
+  </component>
+  <component name="NodePackageJsonFileManager">
+    <packageJsonPaths />
+  </component>
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="y" value="-14" />
+    <option name="width" value="1066" />
+    <option name="height" value="782" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
+    <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+    <property name="settings.editor.selected.configurable" value="editor.preferences.import" />
+  </component>
+  <component name="RunManager" selected="Application.test_basic">
+    <configuration name="Build All" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" CONFIG_NAME="Debug" EXPLICIT_BUILD_TARGET_NAME="all" />
+    <configuration name="pillowtalk" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="pillowtalk" TARGET_NAME="pillowtalk" CONFIG_NAME="Debug" />
+    <configuration name="test_basic" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="pillowtalk" TARGET_NAME="test_basic" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="pillowtalk" RUN_TARGET_NAME="test_basic" />
+    <configuration name="test_changes_feed" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="pillowtalk" TARGET_NAME="test_changes_feed" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="pillowtalk" RUN_TARGET_NAME="test_changes_feed" />
+    <configuration name="test_iterator" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="pillowtalk" TARGET_NAME="test_iterator" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="pillowtalk" RUN_TARGET_NAME="test_iterator" />
+    <configuration name="test_json_generator" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="pillowtalk" TARGET_NAME="test_json_generator" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="pillowtalk" RUN_TARGET_NAME="test_json_generator" />
+    <configuration name="test_parser" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="pillowtalk" TARGET_NAME="test_parser" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="pillowtalk" RUN_TARGET_NAME="test_parser" />
+    <list>
+      <item itemvalue="Application.Build All" />
+      <item itemvalue="Application.pillowtalk" />
+      <item itemvalue="Application.test_basic" />
+      <item itemvalue="Application.test_changes_feed" />
+      <item itemvalue="Application.test_iterator" />
+      <item itemvalue="Application.test_json_generator" />
+      <item itemvalue="Application.test_parser" />
+    </list>
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="masterDetails">
+    <states>
+      <state key="ScopeChooserConfigurable.UI">
+        <settings>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+    </states>
+  </component>
+</project>

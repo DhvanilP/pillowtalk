@@ -1,1 +1,0 @@
-/usr/bin/c++  -g  -rdynamic CMakeFiles/test_basic.dir/test_basic.cpp.o  -o test_basic -Wl,-rpath,/home/dhp/Current/pillowtalk/cmake-build-debug/src:/usr/local/lib ../src/libpillowtalk.so.0.3.0 -lyajl /usr/local/lib/libcurl.so -lpthread 

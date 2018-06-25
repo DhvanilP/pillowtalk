@@ -1,1 +1,0 @@
-/usr/bin/c++  -g  -rdynamic CMakeFiles/test_json_generator.dir/test_json_generator.cpp.o  -o test_json_generator -Wl,-rpath,/home/dhp/Current/pillowtalk/cmake-build-debug/src:/usr/local/lib ../src/libpillowtalk.so.0.3.0 -lyajl /usr/local/lib/libcurl.so -lpthread 
