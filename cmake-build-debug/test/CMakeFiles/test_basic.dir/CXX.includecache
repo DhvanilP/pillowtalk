@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/dhp/Current/pillowtalk/test/test_basic.cpp
+iostream
+-
+string
+-
+vector
+-
+boost/test/included/unit_test.hpp
+-
+pillowtalk.h
+/home/dhp/Current/pillowtalk/test/pillowtalk.h
+
+/usr/local/include/pillowtalk.h
+

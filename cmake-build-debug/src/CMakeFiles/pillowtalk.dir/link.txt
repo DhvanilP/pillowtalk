@@ -1,0 +1,1 @@
+/usr/bin/cc -fPIC -Wall -DDEBUG -g  -shared -Wl,-soname,libpillowtalk.so.0 -o libpillowtalk.so.0.3.0 CMakeFiles/pillowtalk.dir/pillowtalk_impl.c.o CMakeFiles/pillowtalk.dir/pillowtalk_changes_feed.c.o -Wl,-rpath,/usr/local/lib: -lyajl /usr/local/lib/libcurl.so -lpthread 

@@ -14,7 +14,7 @@ struct InitFixture {
     pt_init();
     pt_response_t* res;
 
-    res = pt_delete("http://localhost:5984/pt_test");
+    res = pt_delete("http://admin:mini1234@localhost:5984/pt_test");
     if (res->response_code == 500) {
       pt_free_response(res);
       cout << "Please ensure that couchdb is running on localhost" << endl;
@@ -22,15 +22,15 @@ struct InitFixture {
     }
     pt_free_response(res);
 
-    res = pt_put_raw("http://localhost:5984/pt_test", NULL, 0);
+    res = pt_put_raw("http://admin:mini1234@localhost:5984/pt_test", NULL, 0);
     pt_free_response(res);
 
     const char* basic = "{}";
-    res = pt_put_raw("http://localhost:5984/pt_test/basic", basic, strlen(basic));
+    res = pt_put_raw("http://admin:mini1234@localhost:5984/pt_test/basic", basic, strlen(basic));
     pt_free_response(res);
 
     const char* array = "{\"a\":[1,2,3]}";
-    res = pt_put_raw("http://localhost:5984/pt_test/array", array, strlen(array));
+    res = pt_put_raw("http://admin:mini1234@localhost:5984/pt_test/array", array, strlen(array));
     pt_free_response(res);
   }
 
@@ -50,7 +50,7 @@ BOOST_GLOBAL_FIXTURE(InitFixture);
 
 BOOST_AUTO_TEST_CASE( test_basic )
 {
-  pt_response_t* res = pt_get("http://localhost:5984/pt_test/basic");
+  pt_response_t* res = pt_get("http://admin:mini1234@localhost:5984/pt_test/basic");
   BOOST_REQUIRE(res);
   BOOST_REQUIRE(res->root);
   BOOST_REQUIRE(res->root->type == PT_MAP);
@@ -65,7 +65,7 @@ BOOST_AUTO_TEST_CASE( test_basic )
 
 BOOST_AUTO_TEST_CASE( test_array )
 {
-  pt_response_t* res = pt_get("http://localhost:5984/pt_test/array");
+  pt_response_t* res = pt_get("http://admin:mini1234@localhost:5984/pt_test/array");
   BOOST_REQUIRE(res->root);
   BOOST_REQUIRE(res->root->type == PT_MAP);
 
@@ -87,17 +87,17 @@ BOOST_AUTO_TEST_CASE( test_updates_to_document )
   pt_map_set(new_doc, "name", name);
   pt_map_set(new_doc, "updates", pt_array_new());
 
-  pt_response_t* res = pt_put("http://localhost:5984/pt_test/mynewdoc", new_doc);
+  pt_response_t* res = pt_put("http://admin:mini1234@localhost:5984/pt_test/mynewdoc", new_doc);
   assert_valid_http_code(res->response_code);
   BOOST_REQUIRE(pt_map_get(res->root, "rev") != NULL);
   pt_free_response(res);
   pt_free_node(new_doc);
 
   for(int i=0; i < 5; i++) {
-    res = pt_get("http://localhost:5984/pt_test/mynewdoc");
+    res = pt_get("http://admin:mini1234@localhost:5984/pt_test/mynewdoc");
     BOOST_REQUIRE(res->response_code == 200);
     pt_array_push_back(pt_map_get(res->root, "updates"), pt_integer_new(i));
-    pt_response_t* put_res = pt_put("http://localhost:5984/pt_test/mynewdoc", res->root);
+    pt_response_t* put_res = pt_put("http://admin:mini1234@localhost:5984/pt_test/mynewdoc", res->root);
     BOOST_REQUIRE(put_res->response_code >= 200 && put_res->response_code < 300);
     pt_free_response(res);
     pt_free_response(put_res);
@@ -114,7 +114,7 @@ BOOST_AUTO_TEST_CASE( test_create_document_via_post )
   pt_map_set(new_doc, "name", name);
   pt_map_set(new_doc, "updates", pt_array_new());
 
-  pt_response_t* res = pt_post("http://localhost:5984/pt_test", new_doc);
+  pt_response_t* res = pt_post("http://admin:mini1234@localhost:5984/pt_test", new_doc);
 
   assert_valid_http_code(res->response_code);
   BOOST_REQUIRE(pt_map_get(res->root, "rev") != NULL);
@@ -131,7 +131,7 @@ BOOST_AUTO_TEST_CASE( test_create_document_via_post_raw )
     "\"name\": \"jubos\""
     "}";
   pt_response_t* res = pt_post_raw(
-    "http://localhost:5984/pt_test", doc, strlen(doc));
+    "http://admin:mini1234@localhost:5984/pt_test", doc, strlen(doc));
 
   assert_valid_http_code(res->response_code);
   BOOST_REQUIRE(pt_map_get(res->root, "rev") != NULL);

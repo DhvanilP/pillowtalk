@@ -1,5 +1,5 @@
 SET( pillowtalk_SRCS pillowtalk_impl.c pillowtalk_changes_feed.c)
-SET (pillowtalk_HDRS pillowtalk.h pillowtalk_impl.h ../examples/trycpp.cpp)
+SET (pillowtalk_HDRS pillowtalk.h pillowtalk_impl.h)
 
 ADD_LIBRARY( pillowtalk SHARED ${pillowtalk_SRCS} ${pillowtalk_HDRS} )
 

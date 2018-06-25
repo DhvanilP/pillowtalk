@@ -1,0 +1,1 @@
+/usr/bin/c++  -g  -rdynamic CMakeFiles/test_parser.dir/test_parser.cpp.o  -o test_parser -Wl,-rpath,/home/dhp/Current/pillowtalk/cmake-build-debug/src:/usr/local/lib ../src/libpillowtalk.so.0.3.0 -lyajl /usr/local/lib/libcurl.so -lpthread 
